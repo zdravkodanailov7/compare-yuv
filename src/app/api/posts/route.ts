@@ -16,8 +16,18 @@ export async function GET(request: Request) {
     .order('created_at', { ascending: false });
 
   if (error) {
+    console.error('Failed to fetch posts:', {
+      userId: user.id,
+      error: error.message
+    });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Log successful fetch
+  console.info('Posts fetched successfully:', {
+    userId: user.id,
+    postCount: data?.length || 0
+  });
 
   return NextResponse.json(data || []);
 }
@@ -72,9 +82,21 @@ export async function POST(request: Request) {
     });
   
     if (insertError) {
+      console.error('Failed to create post in database:', {
+        userId: user.id,
+        error: insertError.message
+      });
       return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
-  
+
+    // Log successful post creation
+    console.info('Post created successfully:', {
+      userId: user.id,
+      beforeImage: beforePath,
+      afterImage: afterPath,
+      hasCaption: !!caption
+    });
+
     return NextResponse.json({ message: 'Post created successfully' }, { status: 201 });
   }
 
@@ -94,9 +116,6 @@ export async function POST(request: Request) {
     }
   
     try {
-      console.log('Delete request for post ID:', postId);
-      console.log('User ID:', user.id);
-  
       // Fetch post with minimal fields
       const { data: post, error: fetchError } = await supabase
         .from('posts')
@@ -104,21 +123,20 @@ export async function POST(request: Request) {
         .eq('id', postId)
         .eq('user_id', user.id)
         .single();
-  
-      console.log('Post found:', post ? 'Yes' : 'No');
-      console.log('Fetch error:', fetchError);
-  
+
       if (fetchError || !post) {
-        console.error('Post not found or fetch error:', fetchError?.message);
+        console.error('Post deletion failed - post not found or fetch error:', {
+          postId,
+          userId: user.id,
+          error: fetchError?.message,
+          hasPost: !!post
+        });
         return NextResponse.json({ error: 'Post not found' }, { status: 404 });
       }
-  
+
       // Extract storage paths
       const beforePath = post.before_image_url.replace(/^https:\/\/[^/]+\/storage\/v1\/object\/public\/images\//, '');
       const afterPath = post.after_image_url.replace(/^https:\/\/[^/]+\/storage\/v1\/object\/public\/images\//, '');
-  
-      console.log('Before path:', beforePath);
-      console.log('After path:', afterPath);
   
       // Delete images from storage
       const filesToDelete = [beforePath, afterPath].filter(Boolean); // Remove undefined
@@ -127,27 +145,45 @@ export async function POST(request: Request) {
           .from('images')
           .remove(filesToDelete);
         if (storageError) {
-          console.warn('Storage deletion failed, proceeding with DB delete:', storageError.message);
+          console.warn('Storage deletion failed, proceeding with DB delete:', {
+            postId,
+            userId: user.id,
+            filesToDelete,
+            error: storageError.message
+          });
         }
       }
-  
+
       // Delete from database
       const { data, error: deleteError } = await supabase
         .from('posts')
         .delete()
         .eq('id', postId)
         .eq('user_id', user.id);
-  
-      console.log('Rows deleted:', data);
-  
+
       if (deleteError) {
-        console.error('Database deletion error:', deleteError.message);
+        console.error('Database deletion error:', {
+          postId,
+          userId: user.id,
+          error: deleteError.message
+        });
         return NextResponse.json({ error: deleteError.message }, { status: 500 });
       }
+
+      // Log successful deletion
+      console.info('Post deleted successfully:', {
+        postId,
+        userId: user.id,
+        filesDeleted: filesToDelete.length
+      });
   
       return NextResponse.json({ message: 'Post deleted successfully' }, { status: 200 });
     } catch (error) {
-      console.error('Unexpected error during post deletion:', error);
+      console.error('Unexpected error during post deletion:', {
+        postId,
+        userId: user.id,
+        error: error instanceof Error ? error.message : String(error)
+      });
       return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
     }
   }
@@ -166,7 +202,7 @@ export async function POST(request: Request) {
     }
 
     // Build update object based on what's provided
-    const updateData: any = {};
+    const updateData: { is_favorite?: boolean; is_shared?: boolean } = {};
     if (is_favorite !== undefined) updateData.is_favorite = is_favorite;
     if (is_shared !== undefined) updateData.is_shared = is_shared;
 
@@ -182,11 +218,24 @@ export async function POST(request: Request) {
       .eq('user_id', user.id);
 
     if (updateError) {
+      console.error('Post update failed:', {
+        postId,
+        userId: user.id,
+        updateData,
+        error: updateError.message
+      });
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
+    // Log successful update
+    console.info('Post updated successfully:', {
+      postId,
+      userId: user.id,
+      updatedFields: Object.keys(updateData)
+    });
+
     // Return updated values
-    const responseData: any = { message: 'Post updated' };
+    const responseData: { message: string; is_favorite?: boolean; is_shared?: boolean } = { message: 'Post updated' };
     if (is_favorite !== undefined) responseData.is_favorite = is_favorite;
     if (is_shared !== undefined) responseData.is_shared = is_shared;
 
