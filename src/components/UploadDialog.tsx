@@ -7,13 +7,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { Plus, Loader2 } from 'lucide-react';
 import CompareImage from 'react-compare-image';
 
 interface Props {
   onUploadSuccess: () => void;  // Refetch callback
+  loading?: boolean;  // Loading state for refreshing
 }
 
-export default function UploadDialog({ onUploadSuccess }: Props) {
+export default function UploadDialog({ onUploadSuccess, loading = false }: Props) {
   const [open, setOpen] = useState(false);
   const [beforePreview, setBeforePreview] = useState<string | null>(null);
   const [afterPreview, setAfterPreview] = useState<string | null>(null);
@@ -45,7 +47,7 @@ export default function UploadDialog({ onUploadSuccess }: Props) {
       toast.success('Post uploaded successfully');
       onUploadSuccess();
       setOpen(false);
-      // Reset form
+      // Clear form state after successful upload
       setBeforePreview(null);
       setAfterPreview(null);
       setCaption('');
@@ -54,30 +56,46 @@ export default function UploadDialog({ onUploadSuccess }: Props) {
     }
   };
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      // Only clear state when dialog is closing, not when opening
+      setBeforePreview(null);
+      setAfterPreview(null);
+      setCaption('');
+    }
+    setOpen(newOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button>Upload New Post</Button>
+        <Button variant="outline" size="icon" title="Upload New Post" disabled={loading}>
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="h-4 w-4" />
+          )}
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Upload New Post</DialogTitle>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label>Before Image</Label>
-            <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'before')} required />
+            <Label className="text-sm font-medium mb-2">Before Image</Label>
+            <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'before')} required className="w-full" />
           </div>
           <div>
-            <Label>After Image</Label>
-            <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'after')} required />
+            <Label className="text-sm font-medium mb-2">After Image</Label>
+            <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'after')} required className="w-full" />
           </div>
           {beforePreview && afterPreview && (
             <CompareImage leftImage={beforePreview} rightImage={afterPreview} />
           )}
           <div>
-            <Label>Caption (optional)</Label>
-            <Textarea value={caption} onChange={(e) => setCaption(e.target.value)} />
+            <Label className="text-sm font-medium mb-2">Caption (optional)</Label>
+            <Textarea value={caption} onChange={(e) => setCaption(e.target.value)} className="w-full" />
           </div>
-          <Button type="submit">Save</Button>
+          <Button type="submit" className="w-full">Save</Button>
         </form>
       </DialogContent>
     </Dialog>

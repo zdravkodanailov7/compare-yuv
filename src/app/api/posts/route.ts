@@ -77,3 +77,77 @@ export async function POST(request: Request) {
   
     return NextResponse.json({ message: 'Post created successfully' }, { status: 201 });
   }
+
+  export async function DELETE(request: Request) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+  
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  
+    const url = new URL(request.url);
+    const postId = url.searchParams.get('id');
+  
+    if (!postId) {
+      return NextResponse.json({ error: 'Post ID is required' }, { status: 400 });
+    }
+  
+    try {
+      console.log('Delete request for post ID:', postId);
+      console.log('User ID:', user.id);
+  
+      // Fetch post with minimal fields
+      const { data: post, error: fetchError } = await supabase
+        .from('posts')
+        .select('id, before_image_url, after_image_url')
+        .eq('id', postId)
+        .eq('user_id', user.id)
+        .single();
+  
+      console.log('Post found:', post ? 'Yes' : 'No');
+      console.log('Fetch error:', fetchError);
+  
+      if (fetchError || !post) {
+        console.error('Post not found or fetch error:', fetchError?.message);
+        return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+      }
+  
+      // Extract storage paths
+      const beforePath = post.before_image_url.replace(/^https:\/\/[^/]+\/storage\/v1\/object\/public\/images\//, '');
+      const afterPath = post.after_image_url.replace(/^https:\/\/[^/]+\/storage\/v1\/object\/public\/images\//, '');
+  
+      console.log('Before path:', beforePath);
+      console.log('After path:', afterPath);
+  
+      // Delete images from storage
+      const filesToDelete = [beforePath, afterPath].filter(Boolean); // Remove undefined
+      if (filesToDelete.length > 0) {
+        const { error: storageError } = await supabase.storage
+          .from('images')
+          .remove(filesToDelete);
+        if (storageError) {
+          console.warn('Storage deletion failed, proceeding with DB delete:', storageError.message);
+        }
+      }
+  
+      // Delete from database
+      const { data, error: deleteError } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', postId)
+        .eq('user_id', user.id);
+  
+      console.log('Rows deleted:', data);
+  
+      if (deleteError) {
+        console.error('Database deletion error:', deleteError.message);
+        return NextResponse.json({ error: deleteError.message }, { status: 500 });
+      }
+  
+      return NextResponse.json({ message: 'Post deleted successfully' }, { status: 200 });
+    } catch (error) {
+      console.error('Unexpected error during post deletion:', error);
+      return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
+    }
+  }

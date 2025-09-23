@@ -26,7 +26,8 @@ export async function middleware(req: NextRequest) {
   await supabase.auth.getUser();  // This refreshes if expired
 
   // Optional: Redirect if not authenticated (customize paths)
-  if (req.nextUrl.pathname !== '/auth' && !(await supabase.auth.getUser()).data.user) {
+  // Allow public home page and auth page for non-authenticated users
+  if (req.nextUrl.pathname !== '/auth' && req.nextUrl.pathname !== '/' && !(await supabase.auth.getUser()).data.user) {
     return NextResponse.redirect(new URL('/auth', req.url));
   }
 
