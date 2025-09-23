@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { BlurFade } from '@/components/ui/blur-fade';
 import PostModal from '@/components/PostModal';
 import UploadDialog from '@/components/UploadDialog';
@@ -14,7 +14,7 @@ interface Props {
   showFavoritesOnly?: boolean;
 }
 
-export default function PostsGrid({ initialPosts, onPostsChange, postSize = 'medium', searchTerm = '', showFavoritesOnly = false }: Props) {
+const PostsGridComponent = ({ initialPosts, onPostsChange, postSize = 'medium', searchTerm = '', showFavoritesOnly = false }: Props) => {
   const [posts, setPosts] = useState(initialPosts);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
@@ -65,23 +65,23 @@ export default function PostsGrid({ initialPosts, onPostsChange, postSize = 'med
   }, [initialPosts]);
 
   // Handle post update (for favorite toggle)
-  const handlePostUpdate = (updatedPost: Post) => {
+  const handlePostUpdate = useCallback((updatedPost: Post) => {
     setPosts(prevPosts =>
       prevPosts.map(post =>
         post.id === updatedPost.id ? updatedPost : post
       )
     );
-  };
+  }, []);
 
   // Refetch function (for after upload in Phase 6)
-  const refetchPosts = async () => {
+  const refetchPosts = useCallback(async () => {
     const response = await fetch('/api/posts');
     if (response.ok) {
       const newPosts = await response.json();
       setPosts(newPosts);
       onPostsChange(newPosts); // Also update parent state
     }
-  };
+  }, [onPostsChange]);
 
   return (
     <>
@@ -149,4 +149,6 @@ export default function PostsGrid({ initialPosts, onPostsChange, postSize = 'med
       )}
     </>
   );
-}
+};
+
+export default React.memo(PostsGridComponent);

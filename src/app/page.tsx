@@ -1,14 +1,15 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import React from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import LandingPage from '@/components/LandingPage';
 import Dashboard from '@/components/Dashboard';
 import AuthPage from '@/components/AuthPage';
 
-export default function Home() {
+const HomeComponent = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -24,14 +25,14 @@ export default function Home() {
     getUser();
   }, [supabase.auth]);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     await supabase.auth.signOut();
     setUser(null);
-  };
+  }, [supabase.auth]);
 
-  const handleSignIn = () => {
+  const handleSignIn = useCallback(() => {
     router.push('/auth');
-  };
+  }, [router]);
 
   if (loading) {
     return (
@@ -48,4 +49,6 @@ export default function Home() {
 
   // Show dashboard for authenticated users
   return <Dashboard user={user} onLogout={handleLogout} />;
-}
+};
+
+export default React.memo(HomeComponent);

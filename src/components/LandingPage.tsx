@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
 import ComparisonSlider from '@/components/ComparisonSlider';
@@ -6,7 +7,7 @@ interface LandingPageProps {
   onSignIn: () => void;
 }
 
-export default function LandingPage({ onSignIn }: LandingPageProps) {
+const LandingPageComponent = ({ onSignIn }: LandingPageProps) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       {/* Navigation */}
@@ -128,4 +129,6 @@ export default function LandingPage({ onSignIn }: LandingPageProps) {
       </div>
     </div>
   );
-}
+};
+
+export default React.memo(LandingPageComponent);

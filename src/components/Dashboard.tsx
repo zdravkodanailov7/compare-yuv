@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-export default function Dashboard({ user, onLogout }: DashboardProps) {
+const DashboardComponent = ({ user, onLogout }: DashboardProps) => {
   const { posts, refreshing, fetchPosts, refetchPosts, updatePosts } = usePosts();
   const [postSize, setPostSize] = useState<'small' | 'medium' | 'large'>(
     typeof window !== 'undefined' ? (localStorage.getItem('postSize') as 'small' | 'medium' | 'large') || 'medium' : 'medium'
@@ -27,13 +27,13 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     fetchPosts();
   }, [fetchPosts]);
 
-  const handleSizeChange = (newSize: 'small' | 'medium' | 'large') => {
+  const handleSizeChange = useCallback((newSize: 'small' | 'medium' | 'large') => {
     setPostSize(newSize);
-  };
+  }, []);
 
-  const handleToggleFavorites = () => {
+  const handleToggleFavorites = useCallback(() => {
     setShowFavoritesOnly(prev => !prev);
-  };
+  }, []);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
@@ -77,4 +77,6 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
       />
     </div>
   );
-}
+};
+
+export default React.memo(DashboardComponent);

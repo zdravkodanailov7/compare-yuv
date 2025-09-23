@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import type { Post } from '@/types';
 
 export const usePosts = () => {
@@ -55,12 +55,19 @@ export const usePosts = () => {
     setPosts([]);
   }, []);
 
-  return {
+  return useMemo(() => ({
     posts,
     refreshing,
     fetchPosts,
     refetchPosts,
     updatePosts,
     clearPosts,
-  };
+  }), [
+    posts,
+    refreshing,
+    fetchPosts,
+    refetchPosts,
+    updatePosts,
+    clearPosts,
+  ]);
 };
