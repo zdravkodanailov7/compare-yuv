@@ -6,25 +6,26 @@ import PostModal from '@/components/PostModal';
 import UploadDialog from '@/components/UploadDialog';
 import { PostsGridSkeleton } from '@/components/ui/skeleton';
 import type { Post } from '@/types';
+import { POST_SIZES, PostSize } from '@/lib/constants';
 
 interface Props {
   initialPosts: Post[];
   onPostsChange: (posts: Post[]) => void;
-  postSize?: 'small' | 'medium' | 'large';
+  postSize?: PostSize;
   searchTerm?: string;
   showFavoritesOnly?: boolean;
   loading?: boolean;
 }
 
-const PostsGridComponent = ({ initialPosts, onPostsChange, postSize = 'medium', searchTerm = '', showFavoritesOnly = false, loading = false }: Props) => {
+const PostsGridComponent = ({ initialPosts, onPostsChange, postSize = POST_SIZES.MEDIUM, searchTerm = '', showFavoritesOnly = false, loading = false }: Props) => {
   const [posts, setPosts] = useState(initialPosts);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
   // Calculate columns based on size preference
   const columns = useMemo(() => {
     switch (postSize) {
-      case 'small': return 'columns-1 xs:columns-2 sm:columns-3 md:columns-4';
-      case 'large': return 'columns-1 sm:columns-2 md:columns-3';
+      case POST_SIZES.SMALL: return 'columns-1 xs:columns-2 sm:columns-3 md:columns-4';
+      case POST_SIZES.LARGE: return 'columns-1 sm:columns-2 md:columns-3';
       default: return 'columns-1 xs:columns-2 sm:columns-2 md:columns-3';
     }
   }, [postSize]);
@@ -32,9 +33,9 @@ const PostsGridComponent = ({ initialPosts, onPostsChange, postSize = 'medium', 
   // Get responsive column classes
   const getColumnClasses = () => {
     switch (postSize) {
-      case 'small':
+      case POST_SIZES.SMALL:
         return 'columns-1 xs:columns-2 sm:columns-3 md:columns-4 lg:columns-5';
-      case 'large':
+      case POST_SIZES.LARGE:
         return 'columns-1 sm:columns-2 md:columns-3';
       default: // medium
         return 'columns-1 xs:columns-2 sm:columns-2 md:columns-3 lg:columns-4';

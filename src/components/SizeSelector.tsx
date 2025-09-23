@@ -10,10 +10,11 @@ import {
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react';
+import { POST_SIZES, PostSize } from '@/lib/constants';
 
 interface Props {
-  value: 'small' | 'medium' | 'large';
-  onChange: (size: 'small' | 'medium' | 'large') => void;
+  value: PostSize;
+  onChange: (size: PostSize) => void;
 }
 
 export default function SizeSelector({ value, onChange }: Props) {
@@ -33,20 +34,20 @@ export default function SizeSelector({ value, onChange }: Props) {
     );
   }
 
-  const handleSizeChange = (size: 'small' | 'medium' | 'large') => {
-    onChange(size);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('postSize', size);
-    }
-  };
+      const handleSizeChange = (size: PostSize) => {
+        onChange(size);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('postSize', size);
+        }
+      };
 
-  const getSizeLabel = (size: 'small' | 'medium' | 'large') => {
-    switch (size) {
-      case 'small': return 'Small';
-      case 'medium': return 'Medium';
-      case 'large': return 'Large';
-    }
-  };
+      const getSizeLabel = (size: PostSize) => {
+        switch (size) {
+          case POST_SIZES.SMALL: return 'Small';
+          case POST_SIZES.MEDIUM: return 'Medium';
+          case POST_SIZES.LARGE: return 'Large';
+        }
+      };
 
   return (
     <div className="hidden sm:block">
@@ -57,18 +58,18 @@ export default function SizeSelector({ value, onChange }: Props) {
             <ChevronDown className="h-3 w-3 ml-2" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Post Size</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => handleSizeChange('small')}>
-            Small
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleSizeChange('medium')}>
-            Medium
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleSizeChange('large')}>
-            Large
-          </DropdownMenuItem>
-        </DropdownMenuContent>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Post Size</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => handleSizeChange(POST_SIZES.SMALL)}>
+                Small
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSizeChange(POST_SIZES.MEDIUM)}>
+                Medium
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSizeChange(POST_SIZES.LARGE)}>
+                Large
+              </DropdownMenuItem>
+            </DropdownMenuContent>
       </DropdownMenu>
     </div>
   );

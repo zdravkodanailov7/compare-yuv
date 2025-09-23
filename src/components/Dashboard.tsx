@@ -10,6 +10,7 @@ import SizeSelector from '@/components/SizeSelector';
 import SearchBar from '@/components/SearchBar';
 import { usePosts } from '@/hooks/usePosts';
 import { PostsGridSkeleton, DashboardHeaderSkeleton } from '@/components/ui/skeleton';
+import { POST_SIZES, PostSize } from '@/lib/constants';
 
 interface DashboardProps {
   user: User;
@@ -18,8 +19,8 @@ interface DashboardProps {
 
 const DashboardComponent = ({ user, onLogout }: DashboardProps) => {
   const { posts, refreshing, fetchPosts, refetchPosts, updatePosts } = usePosts();
-  const [postSize, setPostSize] = useState<'small' | 'medium' | 'large'>(
-    typeof window !== 'undefined' ? (localStorage.getItem('postSize') as 'small' | 'medium' | 'large') || 'medium' : 'medium'
+  const [postSize, setPostSize] = useState<PostSize>(
+    typeof window !== 'undefined' ? (localStorage.getItem('postSize') as PostSize) || POST_SIZES.MEDIUM : POST_SIZES.MEDIUM
   );
   const [searchTerm, setSearchTerm] = useState('');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -28,7 +29,7 @@ const DashboardComponent = ({ user, onLogout }: DashboardProps) => {
     fetchPosts();
   }, [fetchPosts]);
 
-  const handleSizeChange = useCallback((newSize: 'small' | 'medium' | 'large') => {
+  const handleSizeChange = useCallback((newSize: PostSize) => {
     setPostSize(newSize);
   }, []);
 

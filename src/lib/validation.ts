@@ -1,24 +1,22 @@
+import { MAX_FILE_SIZE, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, ERROR_MESSAGES, VALIDATION, SEARCH } from '@/lib/constants';
+
 // File validation utilities
 export const validateImageFile = (file: File): void => {
-  const maxSize = 10 * 1024 * 1024; // 10MB
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
-
   // Check file size
-  if (file.size > maxSize) {
-    throw new Error(`File too large. Maximum size is ${formatFileSize(maxSize)}`);
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error(`${ERROR_MESSAGES.FILE_TOO_LARGE}. Maximum size is ${formatFileSize(MAX_FILE_SIZE)}`);
   }
 
   // Check file type by MIME type
-  if (!allowedTypes.includes(file.type)) {
-    throw new Error('Invalid file type. Allowed types: JPEG, PNG, WebP, GIF');
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type as any)) {
+    throw new Error(ERROR_MESSAGES.INVALID_FILE_TYPE);
   }
 
   // Additional check by file extension (for extra security)
   const fileName = file.name.toLowerCase();
-  const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+  const hasValidExtension = ALLOWED_IMAGE_EXTENSIONS.some(ext => fileName.endsWith(ext));
   if (!hasValidExtension) {
-    throw new Error('Invalid file extension. Allowed extensions: .jpg, .jpeg, .png, .webp, .gif');
+    throw new Error(ERROR_MESSAGES.INVALID_FILE_TYPE);
   }
 
   // Check for minimum file size (to avoid empty/corrupted files)
@@ -30,15 +28,12 @@ export const validateImageFile = (file: File): void => {
 
 // Text validation utilities
 export const validateCaption = (caption: string): void => {
-  const maxLength = 500;
-  const minLength = 0;
-
-  if (caption.length > maxLength) {
-    throw new Error(`Caption too long. Maximum ${maxLength} characters allowed`);
+  if (caption.length > VALIDATION.CAPTION.MAX_LENGTH) {
+    throw new Error(`Caption too long. Maximum ${VALIDATION.CAPTION.MAX_LENGTH} characters allowed`);
   }
 
-  if (caption.length < minLength) {
-    throw new Error(`Caption too short. Minimum ${minLength} characters required`);
+  if (caption.length < VALIDATION.CAPTION.MIN_LENGTH) {
+    throw new Error(`Caption too short. Minimum ${VALIDATION.CAPTION.MIN_LENGTH} characters required`);
   }
 
   // Basic sanitization - remove potentially dangerous characters
@@ -107,15 +102,12 @@ export const validatePostId = (postId: string): void => {
 
 // Search term validation
 export const validateSearchTerm = (searchTerm: string): void => {
-  const maxLength = 100;
-  const minLength = 0;
-
-  if (searchTerm.length > maxLength) {
-    throw new Error(`Search term too long. Maximum ${maxLength} characters allowed`);
+  if (searchTerm.length > SEARCH.MAX_QUERY_LENGTH) {
+    throw new Error(`Search term too long. Maximum ${SEARCH.MAX_QUERY_LENGTH} characters allowed`);
   }
 
-  if (searchTerm.length < minLength) {
-    throw new Error('Invalid search term');
+  if (searchTerm.length < SEARCH.MIN_QUERY_LENGTH && searchTerm.length > 0) {
+    throw new Error(`Search term too short. Minimum ${SEARCH.MIN_QUERY_LENGTH} characters required`);
   }
 
   // Sanitize search term

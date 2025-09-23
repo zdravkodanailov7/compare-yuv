@@ -1,8 +1,25 @@
 import { createClient } from '@/utils/supabase/server';  // Async server client
 import { NextResponse } from 'next/server';
 import { validatePostRequest, validateUserId, validatePostId, sanitizeFileName } from '@/lib/validation';
+import { rateLimiters, getRateLimitHeaders } from '@/lib/rateLimit';
 
 export async function GET(request: Request) {
+  // Check rate limit for read operations
+  const rateLimitResult = await rateLimiters.read(request);
+  if (!rateLimitResult.success) {
+    const headers = getRateLimitHeaders('read:unknown');
+    return NextResponse.json(
+      { error: rateLimitResult.error },
+      {
+        status: 429,
+        headers: {
+          ...headers,
+          'Retry-After': rateLimitResult.resetTime ? Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString() : '60'
+        }
+      }
+    );
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -30,22 +47,39 @@ export async function GET(request: Request) {
     postCount: data?.length || 0
   });
 
-  return NextResponse.json(data || []);
+  const headers = getRateLimitHeaders('read:unknown');
+  return NextResponse.json(data || [], { headers });
 }
 
 export async function POST(request: Request) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+  // Check rate limit for upload operations
+  const rateLimitResult = await rateLimiters.upload(request);
+  if (!rateLimitResult.success) {
+    const headers = getRateLimitHeaders('upload:unknown');
+    return NextResponse.json(
+      { error: rateLimitResult.error },
+      {
+        status: 429,
+        headers: {
+          ...headers,
+          'Retry-After': rateLimitResult.resetTime ? Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString() : '60'
+        }
+      }
+    );
+  }
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-    try {
-      // Validate user ID format
-      validateUserId(user.id);
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-      const formData = await request.formData();
+  try {
+    // Validate user ID format
+    validateUserId(user.id);
+
+    const formData = await request.formData();
 
       // Validate and extract form data
       const { beforeFile, afterFile, caption } = validatePostRequest(formData);
@@ -117,7 +151,23 @@ export async function POST(request: Request) {
 }
 }
 
-export async function DELETE(request: Request) {
+  export async function DELETE(request: Request) {
+    // Check rate limit for delete operations
+    const rateLimitResult = await rateLimiters.delete(request);
+    if (!rateLimitResult.success) {
+      const headers = getRateLimitHeaders('delete:unknown');
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        {
+          status: 429,
+          headers: {
+            ...headers,
+            'Retry-After': rateLimitResult.resetTime ? Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString() : '60'
+          }
+        }
+      );
+    }
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -200,7 +250,8 @@ export async function DELETE(request: Request) {
         filesDeleted: filesToDelete.length
       });
 
-      return NextResponse.json({ message: 'Post deleted successfully' }, { status: 200 });
+      const headers = getRateLimitHeaders('delete:unknown');
+      return NextResponse.json({ message: 'Post deleted successfully' }, { status: 200, headers });
     } catch (error) {
       console.error('Unexpected error during post deletion:', {
         postId,
@@ -212,6 +263,22 @@ export async function DELETE(request: Request) {
   }
 
   export async function PATCH(request: Request) {
+    // Check rate limit for update operations
+    const rateLimitResult = await rateLimiters.update(request);
+    if (!rateLimitResult.success) {
+      const headers = getRateLimitHeaders('patch:unknown');
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        {
+          status: 429,
+          headers: {
+            ...headers,
+            'Retry-After': rateLimitResult.resetTime ? Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString() : '60'
+          }
+        }
+      );
+    }
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -279,7 +346,8 @@ export async function DELETE(request: Request) {
       if (is_favorite !== undefined) responseData.is_favorite = is_favorite;
       if (is_shared !== undefined) responseData.is_shared = is_shared;
 
-      return NextResponse.json(responseData, { status: 200 });
+      const headers = getRateLimitHeaders('patch:unknown');
+      return NextResponse.json(responseData, { status: 200, headers });
     } catch (error) {
       return NextResponse.json({ error: error instanceof Error ? error.message : 'Invalid input' }, { status: 400 });
     }
