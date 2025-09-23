@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { validateSearchTerm } from '@/lib/validation';
+import { toast } from 'sonner';
 
 interface Props {
   value: string;
@@ -16,8 +18,22 @@ export default function SearchBar({ value, onChange, placeholder = "Search posts
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    setLocalValue(newValue);
-    onChange(newValue);
+
+    // Validate search term length and characters
+    if (newValue.trim()) {
+      try {
+        validateSearchTerm(newValue);
+        setLocalValue(newValue);
+        onChange(newValue);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Invalid search term');
+        return;
+      }
+    } else {
+      // Allow empty search terms
+      setLocalValue(newValue);
+      onChange(newValue);
+    }
   };
 
   const handleClear = () => {

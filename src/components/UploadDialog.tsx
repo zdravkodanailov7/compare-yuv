@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Plus, Loader2 } from 'lucide-react';
 import CompareImage from 'react-compare-image';
 import { LoadingSpinner } from '@/components/ui/skeleton';
+import { validateImageFile, validateCaption, formatFileSize, sanitizeFileName } from '@/lib/validation';
 
 interface Props {
   onUploadSuccess: () => void;  // Refetch callback
@@ -27,42 +28,76 @@ export default function UploadDialog({ onUploadSuccess, loading = false }: Props
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'before' | 'after') => {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      if (type === 'before') {
-        setBeforeFile(file);
-        setBeforePreview(url);
-      } else {
-        setAfterFile(file);
-        setAfterPreview(url);
+      try {
+        // Validate the file before processing
+        validateImageFile(file);
+
+        // Show file size info
+        const fileSize = formatFileSize(file.size);
+        toast.success(`${type === 'before' ? 'Before' : 'After'} image selected: ${fileSize}`);
+
+        const url = URL.createObjectURL(file);
+        if (type === 'before') {
+          setBeforeFile(file);
+          setBeforePreview(url);
+        } else {
+          setAfterFile(file);
+          setAfterPreview(url);
+        }
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Invalid file selected');
+        // Clear the input
+        e.target.value = '';
       }
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate files exist
     if (!beforeFile || !afterFile) {
       toast.error('Both images are required');
       return;
     }
 
+    // Validate caption if provided
+    if (caption.trim()) {
+      try {
+        validateCaption(caption.trim());
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Invalid caption');
+        return;
+      }
+    }
+
+    // Show upload progress
+    toast.info('Uploading images...');
+
     const formData = new FormData();
     formData.append('before', beforeFile);
     formData.append('after', afterFile);
-    formData.append('caption', caption);
+    formData.append('caption', caption.trim());
 
-    const response = await fetch('/api/posts', { method: 'POST', body: formData });
-    if (response.ok) {
-      toast.success('Post uploaded successfully');
-      onUploadSuccess();
-      setOpen(false);
-      // Clear form state after successful upload
-      setBeforeFile(null);
-      setAfterFile(null);
-      setBeforePreview(null);
-      setAfterPreview(null);
-      setCaption('');
-    } else {
-      toast.error(await response.text());
+    try {
+      const response = await fetch('/api/posts', { method: 'POST', body: formData });
+
+      if (response.ok) {
+        toast.success('Post uploaded successfully');
+        onUploadSuccess();
+        setOpen(false);
+        // Clear form state after successful upload
+        setBeforeFile(null);
+        setAfterFile(null);
+        setBeforePreview(null);
+        setAfterPreview(null);
+        setCaption('');
+      } else {
+        const errorText = await response.text();
+        toast.error(`Upload failed: ${errorText}`);
+      }
+    } catch (error) {
+      toast.error('Network error. Please check your connection and try again.');
     }
   };
 
