@@ -21,9 +21,9 @@ export default function PostsGrid({ initialPosts, onPostsChange, postSize = 'med
   // Calculate columns based on size preference
   const columns = useMemo(() => {
     switch (postSize) {
-      case 'small': return 'columns-2 sm:columns-3 md:columns-4';
+      case 'small': return 'columns-1 xs:columns-2 sm:columns-3 md:columns-4';
       case 'large': return 'columns-1 sm:columns-2 md:columns-3';
-      default: return 'columns-1 sm:columns-2 md:columns-3';
+      default: return 'columns-1 xs:columns-2 sm:columns-2 md:columns-3';
     }
   }, [postSize]);
 
@@ -31,11 +31,11 @@ export default function PostsGrid({ initialPosts, onPostsChange, postSize = 'med
   const getColumnClasses = () => {
     switch (postSize) {
       case 'small':
-        return 'columns-2 sm:columns-3 md:columns-4 lg:columns-5';
+        return 'columns-1 xs:columns-2 sm:columns-3 md:columns-4 lg:columns-5';
       case 'large':
         return 'columns-1 sm:columns-2 md:columns-3';
       default: // medium
-        return 'columns-1 sm:columns-2 md:columns-3 lg:columns-4';
+        return 'columns-1 xs:columns-2 sm:columns-2 md:columns-3 lg:columns-4';
     }
   };
 
@@ -86,33 +86,33 @@ export default function PostsGrid({ initialPosts, onPostsChange, postSize = 'med
   return (
     <>
       {filteredPosts.length === 0 ? (
-        <div className="flex items-center justify-center h-64 text-center">
-          <div>
+        <div className="flex items-center justify-center h-64 text-center px-4">
+          <div className="max-w-sm">
             {showFavoritesOnly ? (
               <>
-                <p className="text-muted-foreground mb-2">No favorite posts yet</p>
+                <p className="text-muted-foreground mb-2 text-base sm:text-lg">No favorite posts yet</p>
                 <p className="text-sm text-muted-foreground">Heart some posts to see them here</p>
               </>
             ) : searchTerm.trim() ? (
               <>
-                <p className="text-muted-foreground mb-2">No posts found</p>
+                <p className="text-muted-foreground mb-2 text-base sm:text-lg">No posts found</p>
                 <p className="text-sm text-muted-foreground">Try adjusting your search terms</p>
               </>
             ) : (
               <>
-                <p className="text-muted-foreground mb-2">No posts yet</p>
+                <p className="text-muted-foreground mb-2 text-base sm:text-lg">No posts yet</p>
                 <p className="text-sm text-muted-foreground">Use the plus button above to upload your first comparison</p>
               </>
             )}
           </div>
         </div>
       ) : (
-        <div className={`${getColumnClasses()} gap-4`}>
+        <div className={`${getColumnClasses()} gap-3 sm:gap-4 px-2 sm:px-0`}>
           {filteredPosts.map((post, index) => (
             <BlurFade key={post.id} delay={index * 0.05} inView>
               <div
                 onClick={() => setSelectedPost(post)}
-                className="mb-4 cursor-pointer group break-inside-avoid"
+                className="mb-3 sm:mb-4 cursor-pointer group break-inside-avoid"
               >
                 {/* Thumbnail: Merged comparison */}
                 <div className="relative flex border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-[1.02]">
@@ -130,7 +130,7 @@ export default function PostsGrid({ initialPosts, onPostsChange, postSize = 'med
                   <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-300 dark:bg-gray-600 transform -translate-x-0.5"></div>
                 </div>
                 {post.caption && (
-                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                  <p className="mt-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                     {post.caption}
                   </p>
                 )}

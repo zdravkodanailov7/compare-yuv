@@ -49,25 +49,27 @@ export default function SizeSelector({ value, onChange }: Props) {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm">
-          {getSizeLabel(value)}
-          <ChevronDown className="h-3 w-3 ml-2" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Post Size</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => handleSizeChange('small')}>
-          Small
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleSizeChange('medium')}>
-          Medium
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleSizeChange('large')}>
-          Large
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="hidden sm:block">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm">
+            {getSizeLabel(value)}
+            <ChevronDown className="h-3 w-3 ml-2" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Post Size</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => handleSizeChange('small')}>
+            Small
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleSizeChange('medium')}>
+            Medium
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleSizeChange('large')}>
+            Large
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }

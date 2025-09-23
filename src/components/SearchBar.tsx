@@ -26,21 +26,21 @@ export default function SearchBar({ value, onChange, placeholder = "Search posts
   };
 
   return (
-    <div className="relative flex items-center">
+    <div className="relative flex items-center w-full max-w-xs sm:max-w-sm">
       <Search className="absolute left-3 h-4 w-4 text-gray-400" />
       <Input
         type="text"
         placeholder={placeholder}
         value={localValue}
         onChange={handleInputChange}
-        className="pl-10 pr-10 w-64"
+        className="pl-10 pr-10 w-full min-w-0"
       />
       {localValue && (
         <Button
           variant="ghost"
           size="sm"
           onClick={handleClear}
-          className="absolute right-1 h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+          className="absolute right-1 h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
         >
           <X className="h-4 w-4" />
         </Button>
