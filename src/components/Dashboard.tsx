@@ -9,6 +9,7 @@ import UploadDialog from '@/components/UploadDialog';
 import SizeSelector from '@/components/SizeSelector';
 import SearchBar from '@/components/SearchBar';
 import { usePosts } from '@/hooks/usePosts';
+import { PostsGridSkeleton, DashboardHeaderSkeleton } from '@/components/ui/skeleton';
 
 interface DashboardProps {
   user: User;
@@ -68,13 +69,23 @@ const DashboardComponent = ({ user, onLogout }: DashboardProps) => {
       </div>
 
       {/* Posts Grid - responsive */}
-      <PostsGrid
-        initialPosts={posts}
-        onPostsChange={updatePosts}
-        postSize={postSize}
-        searchTerm={searchTerm}
-        showFavoritesOnly={showFavoritesOnly}
-      />
+      {posts.length === 0 && !refreshing ? (
+        <div className="flex items-center justify-center h-64 text-center">
+          <div>
+            <p className="text-muted-foreground mb-2">No posts yet</p>
+            <p className="text-sm text-muted-foreground">Use the plus button above to upload your first comparison</p>
+          </div>
+        </div>
+      ) : (
+        <PostsGrid
+          initialPosts={posts}
+          onPostsChange={updatePosts}
+          postSize={postSize}
+          searchTerm={searchTerm}
+          showFavoritesOnly={showFavoritesOnly}
+          loading={refreshing}
+        />
+      )}
     </div>
   );
 };

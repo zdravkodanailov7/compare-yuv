@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Plus, Loader2 } from 'lucide-react';
 import CompareImage from 'react-compare-image';
+import { LoadingSpinner } from '@/components/ui/skeleton';
 
 interface Props {
   onUploadSuccess: () => void;  // Refetch callback
@@ -82,7 +83,7 @@ export default function UploadDialog({ onUploadSuccess, loading = false }: Props
       <DialogTrigger asChild>
         <Button variant="outline" size="icon" title="Upload New Post" disabled={loading}>
           {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <LoadingSpinner size="sm" />
           ) : (
             <Plus className="h-4 w-4" />
           )}
@@ -106,7 +107,16 @@ export default function UploadDialog({ onUploadSuccess, loading = false }: Props
             <Label className="text-sm font-medium mb-2">Caption (optional)</Label>
             <Textarea value={caption} onChange={(e) => setCaption(e.target.value)} className="w-full" />
           </div>
-          <Button type="submit" className="w-full">Save</Button>
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? (
+              <>
+                <LoadingSpinner size="sm" />
+                Uploading...
+              </>
+            ) : (
+              'Save'
+            )}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

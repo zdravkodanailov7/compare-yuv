@@ -8,6 +8,7 @@ import type { User } from '@supabase/supabase-js';
 import LandingPage from '@/components/LandingPage';
 import Dashboard from '@/components/Dashboard';
 import AuthPage from '@/components/AuthPage';
+import { PageLoadingSkeleton } from '@/components/ui/skeleton';
 
 const HomeComponent = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -35,11 +36,7 @@ const HomeComponent = () => {
   }, [router]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <PageLoadingSkeleton />;
   }
 
   // Show authentication page if no user

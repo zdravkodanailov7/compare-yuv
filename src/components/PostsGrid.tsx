@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { BlurFade } from '@/components/ui/blur-fade';
 import PostModal from '@/components/PostModal';
 import UploadDialog from '@/components/UploadDialog';
+import { PostsGridSkeleton } from '@/components/ui/skeleton';
 import type { Post } from '@/types';
 
 interface Props {
@@ -12,9 +13,10 @@ interface Props {
   postSize?: 'small' | 'medium' | 'large';
   searchTerm?: string;
   showFavoritesOnly?: boolean;
+  loading?: boolean;
 }
 
-const PostsGridComponent = ({ initialPosts, onPostsChange, postSize = 'medium', searchTerm = '', showFavoritesOnly = false }: Props) => {
+const PostsGridComponent = ({ initialPosts, onPostsChange, postSize = 'medium', searchTerm = '', showFavoritesOnly = false, loading = false }: Props) => {
   const [posts, setPosts] = useState(initialPosts);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
@@ -82,6 +84,11 @@ const PostsGridComponent = ({ initialPosts, onPostsChange, postSize = 'medium', 
       onPostsChange(newPosts); // Also update parent state
     }
   }, [onPostsChange]);
+
+  // Show skeleton loaders when loading
+  if (loading) {
+    return <PostsGridSkeleton count={6} />;
+  }
 
   return (
     <>
