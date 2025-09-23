@@ -12,10 +12,10 @@ export async function middleware(req: NextRequest) {
         get(name: string) {
           return req.cookies.get(name)?.value;
         },
-        set(name: string, value: string, options: Record<string, any>) {
+        set(name: string, value: string, options: { path?: string; domain?: string; maxAge?: number; expires?: Date; httpOnly?: boolean; secure?: boolean; sameSite?: 'strict' | 'lax' | 'none' } = {}) {
           res.cookies.set({ name, value, ...options });
         },
-        remove(name: string, options: Record<string, any>) {
+        remove(name: string, options: { path?: string; domain?: string; httpOnly?: boolean; secure?: boolean; sameSite?: 'strict' | 'lax' | 'none' } = {}) {
           res.cookies.set({ name, value: '', ...options, maxAge: 0 });
         },
       },
@@ -26,8 +26,12 @@ export async function middleware(req: NextRequest) {
   await supabase.auth.getUser();  // This refreshes if expired
 
   // Optional: Redirect if not authenticated (customize paths)
-  // Allow public home page and auth page for non-authenticated users
-  if (req.nextUrl.pathname !== '/auth' && req.nextUrl.pathname !== '/' && !(await supabase.auth.getUser()).data.user) {
+  // Allow public home page, auth page, and share pages for non-authenticated users
+  if (
+    !['/auth', '/'].some(path => req.nextUrl.pathname.startsWith(path)) &&
+    !req.nextUrl.pathname.startsWith('/share') &&
+    !(await supabase.auth.getUser()).data.user
+  ) {
     return NextResponse.redirect(new URL('/auth', req.url));
   }
 

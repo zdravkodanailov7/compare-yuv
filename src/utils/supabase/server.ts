@@ -11,10 +11,10 @@ export async function createClient() {
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
-        set(name: string, value: string, options: Record<string, any>) {
+        set(name: string, value: string, options: { path?: string; domain?: string; maxAge?: number; expires?: Date; httpOnly?: boolean; secure?: boolean; sameSite?: 'strict' | 'lax' | 'none' } = {}) {
           cookieStore.set({ name, value, ...options });
         },
-        remove(name: string, options: Record<string, any>) {
+        remove(name: string, options: { path?: string; domain?: string; httpOnly?: boolean; secure?: boolean; sameSite?: 'strict' | 'lax' | 'none' } = {}) {
           cookieStore.set({ name, value: '', ...options, maxAge: 0 });
         },
       },

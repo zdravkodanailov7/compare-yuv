@@ -151,3 +151,44 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
     }
   }
+
+  export async function PATCH(request: Request) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { postId, is_favorite, is_shared } = await request.json();
+    if (!postId) {
+      return NextResponse.json({ error: 'Post ID required' }, { status: 400 });
+    }
+
+    // Build update object based on what's provided
+    const updateData: any = {};
+    if (is_favorite !== undefined) updateData.is_favorite = is_favorite;
+    if (is_shared !== undefined) updateData.is_shared = is_shared;
+
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
+    }
+
+    // Update the post (RLS enforces ownership)
+    const { error: updateError } = await supabase
+      .from('posts')
+      .update(updateData)
+      .eq('id', postId)
+      .eq('user_id', user.id);
+
+    if (updateError) {
+      return NextResponse.json({ error: updateError.message }, { status: 500 });
+    }
+
+    // Return updated values
+    const responseData: any = { message: 'Post updated' };
+    if (is_favorite !== undefined) responseData.is_favorite = is_favorite;
+    if (is_shared !== undefined) responseData.is_shared = is_shared;
+
+    return NextResponse.json(responseData, { status: 200 });
+  }
