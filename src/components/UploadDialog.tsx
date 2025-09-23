@@ -17,6 +17,8 @@ interface Props {
 
 export default function UploadDialog({ onUploadSuccess, loading = false }: Props) {
   const [open, setOpen] = useState(false);
+  const [beforeFile, setBeforeFile] = useState<File | null>(null);
+  const [afterFile, setAfterFile] = useState<File | null>(null);
   const [beforePreview, setBeforePreview] = useState<string | null>(null);
   const [afterPreview, setAfterPreview] = useState<string | null>(null);
   const [caption, setCaption] = useState('');
@@ -25,21 +27,26 @@ export default function UploadDialog({ onUploadSuccess, loading = false }: Props
     const file = e.target.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      if (type === 'before') setBeforePreview(url);
-      else setAfterPreview(url);
+      if (type === 'before') {
+        setBeforeFile(file);
+        setBeforePreview(url);
+      } else {
+        setAfterFile(file);
+        setAfterPreview(url);
+      }
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!beforePreview || !afterPreview) {
+    if (!beforeFile || !afterFile) {
       toast.error('Both images are required');
       return;
     }
 
     const formData = new FormData();
-    formData.append('before', await fetch(beforePreview).then(r => r.blob()));
-    formData.append('after', await fetch(afterPreview).then(r => r.blob()));
+    formData.append('before', beforeFile);
+    formData.append('after', afterFile);
     formData.append('caption', caption);
 
     const response = await fetch('/api/posts', { method: 'POST', body: formData });
@@ -48,6 +55,8 @@ export default function UploadDialog({ onUploadSuccess, loading = false }: Props
       onUploadSuccess();
       setOpen(false);
       // Clear form state after successful upload
+      setBeforeFile(null);
+      setAfterFile(null);
       setBeforePreview(null);
       setAfterPreview(null);
       setCaption('');
@@ -59,6 +68,8 @@ export default function UploadDialog({ onUploadSuccess, loading = false }: Props
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
       // Only clear state when dialog is closing, not when opening
+      setBeforeFile(null);
+      setAfterFile(null);
       setBeforePreview(null);
       setAfterPreview(null);
       setCaption('');
@@ -88,7 +99,7 @@ export default function UploadDialog({ onUploadSuccess, loading = false }: Props
             <Label className="text-sm font-medium mb-2">After Image</Label>
             <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'after')} required className="w-full" />
           </div>
-          {beforePreview && afterPreview && (
+          {beforeFile && afterFile && beforePreview && afterPreview && (
             <CompareImage leftImage={beforePreview} rightImage={afterPreview} />
           )}
           <div>

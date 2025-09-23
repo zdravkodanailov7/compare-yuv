@@ -40,19 +40,19 @@ export async function POST(request: Request) {
     }
   
     // Upload before image
-    const beforePath = `${user.id}/before-${Date.now()}.${beforeFile.name.split('.').pop()}`;
+    const beforePath = `${user.id}/before-${Date.now()}-${beforeFile.name}`;
     const { error: beforeError } = await supabase.storage
       .from('images')
       .upload(beforePath, beforeFile);
-  
+
     if (beforeError) {
       return NextResponse.json({ error: beforeError.message }, { status: 500 });
     }
     const { data: beforeUrlData } = supabase.storage.from('images').getPublicUrl(beforePath);
     const beforeUrl = beforeUrlData.publicUrl;
-  
+
     // Upload after image (repeat pattern)
-    const afterPath = `${user.id}/after-${Date.now()}.${afterFile.name.split('.').pop()}`;
+    const afterPath = `${user.id}/after-${Date.now()}-${afterFile.name}`;
     const { error: afterError } = await supabase.storage
       .from('images')
       .upload(afterPath, afterFile);
