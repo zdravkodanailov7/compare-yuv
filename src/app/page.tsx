@@ -3,10 +3,13 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
+import PostsGrid from '@/components/PostsGrid';
+import type { Post } from '@/types';
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<Post[]>([]);
   const router = useRouter();
   const supabase = createClient();
 
@@ -17,6 +20,18 @@ export default function Home() {
         router.push('/auth');
       } else {
         setUser(user);
+        // Fetch posts only after user is authenticated
+        const { data: postsData, error } = await supabase
+          .from('posts')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching posts:', error);
+        } else {
+          setPosts(postsData || []);
+        }
       }
       setLoading(false);
     };
@@ -48,7 +63,7 @@ export default function Home() {
           Logout
         </button>
       </div>
-      {/* Grid will go here later */}
+      <PostsGrid initialPosts={posts} />
     </div>
   );
 }
