@@ -33,7 +33,7 @@ A modern, Pinterest-style "Before & After" image comparison platform built with 
 - **Accessibility**: ARIA labels and keyboard navigation support
 
 ### 🔧 Developer Experience
-- **Centralized Configuration**: All constants and settings in one place
+- **Centralised Configuration**: All constants and settings in one place
 - **Component Architecture**: Modular, reusable components
 - **Custom Hooks**: Optimized data fetching and state management
 - **Performance Optimized**: React.memo, useCallback, and useMemo usage
@@ -54,14 +54,13 @@ A modern, Pinterest-style "Before & After" image comparison platform built with 
 - **Database**: PostgreSQL via Supabase
 - **File Storage**: Supabase Storage
 - **API**: Next.js API Routes with rate limiting
-- **Validation**: Custom validation library
+- **Validation**: Custom validation
 
 ### Development Tools
 - **Build Tool**: Next.js with Turbopack
 - **Linting**: ESLint with strict configuration
 - **Type Checking**: TypeScript with strict mode
 - **Code Quality**: Prettier for formatting
-- **Git Hooks**: Husky (ready for setup)
 
 ## 📋 Prerequisites
 
@@ -95,16 +94,6 @@ Before running this project, make sure you have:
    # Supabase Configuration
    NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-   SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
-
-   # Optional: Debug Mode
-   NEXT_PUBLIC_DEBUG_MODE=false
-
-   # Optional: Analytics
-   NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
-
-   # Optional: Error Reporting
-   NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
    ```
 
 4. **Set up Supabase**
@@ -130,10 +119,6 @@ Before running this project, make sure you have:
 |----------|-------------|----------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | ✅ |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public Supabase anonymous key | ✅ |
-| `SUPABASE_SERVICE_ROLE_KEY` | Service role key for server-side operations | ✅ |
-| `NEXT_PUBLIC_DEBUG_MODE` | Enable debug logging (default: false) | ❌ |
-| `NEXT_PUBLIC_ANALYTICS_ID` | Analytics tracking ID | ❌ |
-| `NEXT_PUBLIC_SENTRY_DSN` | Sentry error tracking DSN | ❌ |
 
 ## 📖 Usage
 
@@ -143,7 +128,7 @@ Before running this project, make sure you have:
 2. **Upload Images**: Click the "+" button to upload before/after image pairs
 3. **Add Caption**: Optionally add a description for your comparison
 4. **Compare**: Use the interactive slider to compare before and after images
-5. **Organize**: Favorite posts and use search to find specific comparisons
+5. **Organise**: Favourite posts and use search to find specific comparisons
 6. **Share**: Share comparisons publicly with unique URLs
 
 ### For Developers
@@ -190,40 +175,6 @@ src/
 - `DELETE /api/posts?id=<id>`: Delete a post
 - `PATCH /api/posts`: Update post (favorite, share status)
 
-#### Database Schema
-
-The application uses a simple PostgreSQL schema:
-
-```sql
-CREATE TABLE posts (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID NOT NULL,
-  before_image_url TEXT NOT NULL,
-  after_image_url TEXT NOT NULL,
-  caption TEXT,
-  is_favorite BOOLEAN DEFAULT false,
-  is_shared BOOLEAN DEFAULT false,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-```
-
-## 🧪 Testing
-
-```bash
-# Run tests (when implemented)
-npm run test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run linting
-npm run lint
-
-# Run type checking
-npm run type-check
-```
-
 ## 🚀 Deployment
 
 ### Vercel (Recommended)
@@ -242,15 +193,6 @@ npm run build
 npm start
 ```
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes and add tests
-4. Commit changes: `git commit -m 'Add feature'`
-5. Push to branch: `git push origin feature-name`
-6. Create a Pull Request
-
 ### Code Style
 
 - Use TypeScript for all new code
@@ -258,10 +200,6 @@ npm start
 - Use functional components with hooks
 - Prefer custom hooks for complex logic
 - Add proper TypeScript types for all props
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
@@ -272,16 +210,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Lucide React**: For the beautiful icons
 - **react-compare-slider**: For the image comparison functionality
 
-## 📞 Support
-
-If you have any questions or need help:
-
-- Create an issue on GitHub
-- Check the documentation
-- Review the code examples
-
 ---
 
-**Made with ❤️ for the developer community**
+**Made with ❤️ by Zdravko**
 
 Transform your photos into stunning before-and-after comparisons with CompareYUV! 📸✨
