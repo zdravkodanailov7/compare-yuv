@@ -193,3 +193,10 @@
     animation: none;
     mix-blend-mode: normal;
 }
+
+/* Supabase Auth UI Overrides */
+.supabase-auth-ui_ui-message,
+.c-bBDnOe-dLwhLa-color-danger {
+    color: var(--destructive) !important;
+    background-color: transparent !important;
+}

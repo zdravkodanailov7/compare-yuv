@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { BlurFade } from '@/components/ui/blur-fade';
 import PostModal from '@/components/PostModal';
 import { PostsGridSkeleton } from '@/components/ui/skeleton';
@@ -122,14 +123,18 @@ const PostsGridComponent = ({ initialPosts, onPostsChange, postSize = POST_SIZES
               >
                 {/* Thumbnail: Merged comparison */}
                 <div className="relative flex border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-[1.02]">
-                  <img
+                  <OptimizedImage
                     src={post.before_image_url}
                     alt="Before"
+                    width={400}
+                    height={300}
                     className="w-1/2 h-auto object-cover flex-shrink-0 border-r border-gray-200 dark:border-gray-700"
                   />
-                  <img
+                  <OptimizedImage
                     src={post.after_image_url}
                     alt="After"
+                    width={400}
+                    height={300}
                     className="w-1/2 h-auto object-cover flex-shrink-0"
                   />
                   {/* Subtle center line overlay */}

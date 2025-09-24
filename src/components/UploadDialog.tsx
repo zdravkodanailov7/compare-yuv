@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
-import CompareImage from 'react-compare-image';
+import { ReactCompareSlider } from 'react-compare-slider';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { LoadingSpinner } from '@/components/ui/skeleton';
 import { validateImageFile, validateCaption, formatFileSize } from '@/lib/validation';
 
@@ -136,7 +137,31 @@ export default function UploadDialog({ onUploadSuccess, loading = false }: Props
             <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'after')} required className="w-full" />
           </div>
           {beforeFile && afterFile && beforePreview && afterPreview && (
-            <CompareImage leftImage={beforePreview} rightImage={afterPreview} />
+            <div className="h-64 w-full">
+              <ReactCompareSlider
+                itemOne={
+                  <div className="h-full w-full">
+                    <OptimizedImage
+                      src={beforePreview}
+                      alt="Before preview"
+                      fill
+                      className="object-cover rounded"
+                    />
+                  </div>
+                }
+                itemTwo={
+                  <div className="h-full w-full">
+                    <OptimizedImage
+                      src={afterPreview}
+                      alt="After preview"
+                      fill
+                      className="object-cover rounded"
+                    />
+                  </div>
+                }
+                className="h-full w-full rounded-lg overflow-hidden"
+              />
+            </div>
           )}
           <div>
             <Label className="text-sm font-medium mb-2">Caption (optional)</Label>

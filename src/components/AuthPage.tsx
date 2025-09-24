@@ -50,7 +50,7 @@ export default function AuthPage() {
                 color: 'var(--foreground)',
               },
               message: {
-                color: 'var(--foreground)',
+                color: 'var(--destructive) !important',
               },
               anchor: {
                 color: 'var(--primary)',

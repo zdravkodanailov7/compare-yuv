@@ -5,7 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Heart, Trash2, Share2 } from 'lucide-react';
-import CompareImage from 'react-compare-image';
+import { ReactCompareSlider } from 'react-compare-slider';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
 import type { Post } from '@/types';
 
@@ -110,7 +111,31 @@ export default function PostModal({ post, onClose, onDelete, onUpdate }: Props) 
         <DialogHeader>
           <DialogTitle>{localPost.caption || 'Before & After'}</DialogTitle>
         </DialogHeader>
-        <CompareImage leftImage={localPost.before_image_url} rightImage={localPost.after_image_url} />
+        <div className="h-96 w-full">
+          <ReactCompareSlider
+            itemOne={
+              <div className="h-full w-full">
+                <OptimizedImage
+                  src={localPost.before_image_url}
+                  alt="Before"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            }
+            itemTwo={
+              <div className="h-full w-full">
+                <OptimizedImage
+                  src={localPost.after_image_url}
+                  alt="After"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            }
+            className="h-full w-full rounded-lg overflow-hidden"
+          />
+        </div>
         <div className="flex justify-end gap-2">
           <Button
             variant="ghost"
