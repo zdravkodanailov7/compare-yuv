@@ -102,14 +102,6 @@ export const validatePostId = (postId: string): void => {
 
 // Search term validation
 export const validateSearchTerm = (searchTerm: string): void => {
-  if (searchTerm.length > SEARCH.MAX_QUERY_LENGTH) {
-    throw new Error(`Search term too long. Maximum ${SEARCH.MAX_QUERY_LENGTH} characters allowed`);
-  }
-
-  if (searchTerm.length < SEARCH.MIN_QUERY_LENGTH && searchTerm.length > 0) {
-    throw new Error(`Search term too short. Minimum ${SEARCH.MIN_QUERY_LENGTH} characters required`);
-  }
-
   // Sanitize search term
   const sanitized = searchTerm.replace(/[<>\"'&]/g, '');
   if (sanitized !== searchTerm) {
