@@ -125,16 +125,16 @@ export default function UploadDialog({ onUploadSuccess, loading = false }: Props
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-md">
         <DialogTitle>Upload New Post</DialogTitle>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label className="text-sm font-medium mb-2">Before Image</Label>
-            <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'before')} required className="w-full" />
+            <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'before')} required className="w-full max-w-md" />
           </div>
           <div>
             <Label className="text-sm font-medium mb-2">After Image</Label>
-            <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'after')} required className="w-full" />
+            <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'after')} required className="w-full max-w-md" />
           </div>
           {beforeFile && afterFile && beforePreview && afterPreview && (
             <div className="h-64 w-full">
@@ -165,9 +165,9 @@ export default function UploadDialog({ onUploadSuccess, loading = false }: Props
           )}
           <div>
             <Label className="text-sm font-medium mb-2">Caption (optional)</Label>
-            <Textarea value={caption} onChange={(e) => setCaption(e.target.value)} className="w-full" />
+            <Textarea value={caption} onChange={(e) => setCaption(e.target.value)} className="w-full max-w-md" />
           </div>
-          <Button type="submit" disabled={loading} className="w-full">
+          <Button type="submit" disabled={loading} className="w-full max-w-md">
             {loading ? (
               <>
                 <LoadingSpinner size="sm" />
