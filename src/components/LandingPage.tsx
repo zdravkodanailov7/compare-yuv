@@ -64,8 +64,8 @@ const LandingPageComponent = ({ onSignIn }: LandingPageProps) => {
           <div className="relative">
             <div className="relative overflow-hidden rounded-2xl shadow-2xl bg-white dark:bg-gray-800 p-4">
               <ComparisonSlider
-                beforeImage="https://raw.githubusercontent.com/nerdyman/stuff/main/libs/react-compare-slider/demo-images/lady-2.png"
-                afterImage="https://raw.githubusercontent.com/nerdyman/stuff/main/libs/react-compare-slider/demo-images/lady-1.png"
+                beforeImage="lady-2.png"
+                afterImage="lady-1.png"
                 className="w-full aspect-[4/5] rounded-xl"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent rounded-xl pointer-events-none" />
