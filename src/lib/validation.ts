@@ -8,7 +8,7 @@ export const validateImageFile = (file: File): void => {
   }
 
   // Check file type by MIME type
-  if (!ALLOWED_IMAGE_TYPES.includes(file.type as any)) {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type as (typeof ALLOWED_IMAGE_TYPES)[number])) {
     throw new Error(ERROR_MESSAGES.INVALID_FILE_TYPE);
   }
 

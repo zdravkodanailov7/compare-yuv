@@ -9,6 +9,7 @@ export async function middleware(req: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
+        // @ts-expect-error: req.cookies.get returns a Cookie object, not a string, but Supabase expects a string value
         get(name: string) {
           return req.cookies.get(name)?.value;
         },

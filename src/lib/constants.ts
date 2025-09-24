@@ -215,12 +215,12 @@ export const CACHE = {
 
 // Export utility functions
 export const isValidImageType = (type: string): boolean => {
-  return ALLOWED_IMAGE_TYPES.includes(type as any);
+  return ALLOWED_IMAGE_TYPES.includes(type as (typeof ALLOWED_IMAGE_TYPES)[number]);
 };
 
 export const isValidImageExtension = (filename: string): boolean => {
   const extension = filename.toLowerCase().substring(filename.lastIndexOf('.'));
-  return ALLOWED_IMAGE_EXTENSIONS.includes(extension as any);
+  return ALLOWED_IMAGE_EXTENSIONS.includes(extension as (typeof ALLOWED_IMAGE_EXTENSIONS)[number]);
 };
 
 export const getFileSizeLimit = (): number => MAX_FILE_SIZE;

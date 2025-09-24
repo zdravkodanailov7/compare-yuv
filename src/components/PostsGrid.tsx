@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { BlurFade } from '@/components/ui/blur-fade';
 import PostModal from '@/components/PostModal';
-import UploadDialog from '@/components/UploadDialog';
 import { PostsGridSkeleton } from '@/components/ui/skeleton';
 import type { Post } from '@/types';
 import { POST_SIZES, PostSize } from '@/lib/constants';
@@ -30,7 +29,6 @@ const PostsGridComponent = ({ initialPosts, onPostsChange, postSize = POST_SIZES
     }
   }, [postSize]);
 
-  // Get responsive column classes
   const getColumnClasses = () => {
     switch (postSize) {
       case POST_SIZES.SMALL:

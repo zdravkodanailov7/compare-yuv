@@ -7,10 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import CompareImage from 'react-compare-image';
 import { LoadingSpinner } from '@/components/ui/skeleton';
-import { validateImageFile, validateCaption, formatFileSize, sanitizeFileName } from '@/lib/validation';
+import { validateImageFile, validateCaption, formatFileSize } from '@/lib/validation';
 
 interface Props {
   onUploadSuccess: () => void;  // Refetch callback
@@ -96,7 +96,7 @@ export default function UploadDialog({ onUploadSuccess, loading = false }: Props
         const errorText = await response.text();
         toast.error(`Upload failed: ${errorText}`);
       }
-    } catch (error) {
+    } catch {
       toast.error('Network error. Please check your connection and try again.');
     }
   };

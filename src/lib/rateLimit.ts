@@ -183,9 +183,9 @@ export const rateLimit = async (
       remaining: remaining.remaining,
       resetTime: remaining.resetTime
     };
-  } catch (error) {
+  } catch {
     // If rate limiting fails, allow the request but log the error
-    console.warn('Rate limiting error:', error);
+    console.warn('Rate limiting error occurred');
     return {
       success: true,
       remaining: finalConfig.maxRequests,
